@@ -21,6 +21,16 @@ public class SecurityConfig {
         http.csrf(csrf -> csrf.disable())
                 .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
+                        // 1. Débloquer Swagger et la documentation OpenAPI
+                        .requestMatchers(
+                                "/v3/api-docs/**",
+                                "/v3/api-docs.yaml",
+                                "/swagger-ui/**",
+                                "/swagger-ui.html",
+                                "/webjars/**"
+                        ).permitAll()
+
+                        // 2. Vos routes API existantes
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         .requestMatchers("/api/medecin/**").hasRole("MEDECIN")

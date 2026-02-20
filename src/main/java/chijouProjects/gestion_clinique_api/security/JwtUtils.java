@@ -2,6 +2,8 @@ package chijouProjects.gestion_clinique_api.security;
 
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
+import jakarta.annotation.PostConstruct;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
@@ -11,11 +13,17 @@ import java.util.Date;
 @Component
 public class JwtUtils {
 
-    // La clé doit être assez longue pour l'algorithme HS512 (minimum 64 caractères)
-    private final String SECRET_STRING = "votre_cle_secrete_tres_longue_qui_doit_faire_plus_de_64_octets_pour_la_securite_2026";
+    @Value("${JWT_SECRET}")
+    private String secretString;
 
-    // Génère une clé sécurisée à partir de la chaîne de caractères
-    private final SecretKey key = Keys.hmacShaKeyFor(SECRET_STRING.getBytes(StandardCharsets.UTF_8));
+    private SecretKey key;
+
+    // Cette méthode s'exécute automatiquement une fois que Spring
+    // a fini d'injecter la valeur de @Value
+    @PostConstruct
+    public void init() {
+        this.key = Keys.hmacShaKeyFor(secretString.getBytes(StandardCharsets.UTF_8));
+    }
 
     public String generateToken(String username, String role) {
         return Jwts.builder()
